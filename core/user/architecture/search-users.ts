@@ -1,18 +1,30 @@
 import { UserApi } from "../domain/user-api";
-import { User } from "../domain/user";
-import { SearchCommon } from "../../share/domain/search";
+import { User, UserRestrictDTO } from "../domain/user";
+
+export interface BodySearchUsers {
+    term: string;
+    per_page?: number;
+    page?: number;
+}
 
 export class SearchUsers {
     constructor(
         private userApi: UserApi
     ) { }
 
-    async execute(params?: SearchCommon): Promise<User[]> {
+    async execute(body: BodySearchUsers): Promise<UserRestrictDTO[]> {
         const paramsFormatted = {
-            per_page: params?.per_page || 30,
-            page: params?.page || 1,
-            q: params?.q || '', 
+            per_page: Number(body.per_page || 30),
+            page: Number(body.page || 1),
+            q: body.term, 
         };
-        return this.userApi.searchUsers(paramsFormatted);
+        if(paramsFormatted.per_page < 1 || paramsFormatted.page < 1){
+            throw new Error('per_page and page must be greater than 0');
+        }
+        if(!paramsFormatted.q){
+            throw new Error('term is required');
+        }   
+        const users = await this.userApi.searchUsers(paramsFormatted);
+        return users.map((u: User) => u.toRestrictDTO());
     }
 }

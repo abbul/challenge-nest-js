@@ -1,3 +1,4 @@
+import { PaginationThroughLinks } from "core/share/domain/search";
 
 export interface UserMoreInfo {
     name?: string;
@@ -16,41 +17,46 @@ export interface UserDTO extends UserMoreInfo {
     url: string;
 }
 
+export type ResponseGetUsers = {
+    links: PaginationThroughLinks[];
+    users: UserRestrictDTO[];
+};
+
 export interface UserSummary extends Pick<UserDTO, 'avatar_url' | 'login'> {}
 export interface UserRestrictDTO extends Pick<UserDTO, 'avatar_url' | 'login'  | 'url'> {}
 
 export class User {
     public name?: string;
     public bio?: string;
-    public repos_url?: string;
-    public public_repos?: number;
+    public reposUrl?: string;
+    public publicRepos?: number;
     public followers?: number;
     public following?: number;
-    public created_at?: string;
-    public is_favorite?: boolean;
+    public createdAt?: string;
+    public isFavorite?: boolean;
     constructor(
         public avatarUrl: string,
         public login: string,
         public url: string,
     ) {}
 
-    toDTO() {
+    toDTO(): UserDTO {
         return {
             avatar_url: this.avatarUrl,
             login: this.login,
             url: this.url,
             name: this.name,
             bio: this.bio,
-            repos_url: this.repos_url,
-            public_repos: this.public_repos,
+            repos_url: this.reposUrl,
+            public_repos: this.publicRepos,
             followers: this.followers,
             following: this.following,
-            created_at: this.created_at,
-            is_favorite: this.is_favorite,
+            created_at: this.createdAt,
+            is_favorite: this.isFavorite,
         };
     }
 
-    toRestrictDTO() {
+    toRestrictDTO(): UserRestrictDTO {
         return {
             avatar_url: this.avatarUrl,
             login: this.login,
@@ -58,18 +64,18 @@ export class User {
         };
     }
 
-    addMoreInfo(userMoreInfo: UserMoreInfo) {
+    addMoreInfo(userMoreInfo: UserMoreInfo): void {
         this.name = userMoreInfo.name;
         this.bio = userMoreInfo.bio;
-        this.repos_url = userMoreInfo.repos_url;
-        this.public_repos = userMoreInfo.public_repos;
+        this.reposUrl = userMoreInfo.repos_url;
+        this.publicRepos = userMoreInfo.public_repos;
         this.followers = userMoreInfo.followers;
         this.following = userMoreInfo.following;
-        this.created_at = userMoreInfo.created_at;
-        this.is_favorite = userMoreInfo.is_favorite;
+        this.createdAt = userMoreInfo.created_at;
+        this.isFavorite = userMoreInfo.is_favorite;
     }
 
-    static fromDTO(dto: UserDTO) {
+    static fromDTO(dto: UserDTO): User {
         const user = new User(dto.avatar_url, dto.login, dto.url);
         user.addMoreInfo(dto);
         return user;

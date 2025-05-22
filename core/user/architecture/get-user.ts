@@ -14,7 +14,7 @@ export class GetUser {
         if (!user) {
             throw new Error('User not found');
         }
-        user.is_favorite = favorite !== null;
+        user.isFavorite = favorite !== null;
         return user;
     }
 }
