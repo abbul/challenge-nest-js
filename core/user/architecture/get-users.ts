@@ -1,6 +1,7 @@
 import { ResponseGetUsers, User } from "../domain/user";
 import { UserApi } from "../domain/user-api";   
 import { SearchCommon } from "../../share/domain/search";
+import { HttpException, HttpStatus } from "@nestjs/common";
 
 export class GetUsers {
     constructor(
@@ -13,7 +14,7 @@ export class GetUsers {
             page: Number(params?.page || 1),
         };
         if(paramsFormatted.per_page < 1 || paramsFormatted.page < 1){
-            throw new Error('per_page and page must be greater than 0');
+            throw new HttpException('per_page and page must be greater than 0', HttpStatus.BAD_REQUEST);
         }
         const users = (await this.userApi.getUsers(paramsFormatted)).map((u: User) => u.toRestrictDTO());
         return {
