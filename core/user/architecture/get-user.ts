@@ -1,0 +1,20 @@
+import { UserApi } from "../domain/user-api";
+import { User } from "../domain/user";
+import { FavoriteApi } from "core/favorite/domain/favorite-api";
+
+export class GetUser {
+    constructor(
+        private userApi: UserApi,
+        private favoriteApi: FavoriteApi
+    ) { }
+
+    async execute(username: string): Promise<User> {
+        const favorite = await this.favoriteApi.getFavorite(username);
+        const user = await this.userApi.getUser(username);
+        if (!user) {
+            throw new Error('User not found');
+        }
+        user.is_favorite = favorite !== null;
+        return user;
+    }
+}
